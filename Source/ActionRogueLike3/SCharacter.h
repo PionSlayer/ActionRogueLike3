@@ -12,7 +12,9 @@ UCLASS()
 class ACTIONROGUELIKE3_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -22,10 +24,13 @@ protected:
 	UCameraComponent* CameraComp;
 	USpringArmComponent* SpringArmComp;
 	virtual void BeginPlay() override;
-	void MoveForward(float Value);
+
 
 public:	
-	// Called every frame
+	void MoveForward(float Value);
+    void MoveSideWays(float Value);
+	void PrimaryAttack();
+	
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input

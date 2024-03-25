@@ -2,6 +2,8 @@
 
 
 #include "SCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -13,7 +15,9 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp -> SetupAttachment(SpringArmComp);
 
-
+	SpringArmComp->bUsePawnControlRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement=true;
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
@@ -36,10 +40,37 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent -> BindAxis("Turn",this,&APawn::AddControllerYawInput);
+	PlayerInputComponent -> BindAxis("LookUp",this,&APawn::AddControllerPitchInput);
+	
 	PlayerInputComponent -> BindAxis("MoveForward",this,&ASCharacter::MoveForward);
+	PlayerInputComponent -> BindAxis("MoveSideWays",this,&ASCharacter::MoveSideWays);
+
+	PlayerInputComponent -> BindAction("PrimaryAttack",IE_Pressed,this,&ASCharacter::PrimaryAttack);
 }
 
 void ASCharacter::MoveForward(float Value)
 {
-	AddMovementInput(GetActorForwardVector(),Value);
+	FRotator Direction = GetControlRotation();
+	Direction.Pitch=0;
+	Direction.Roll=0;
+	AddMovementInput(Direction.Vector(),Value);
+}
+void ASCharacter::MoveSideWays(float Value)
+{
+	FRotator Direction = GetControlRotation();
+	Direction.Pitch=0;
+	Direction.Roll=0;
+	FVector RightDirection = FRotationMatrix(Direction).GetScaledAxis(EAxis::Y);
+	AddMovementInput(RightDirection,Value);
+}
+void ASCharacter::PrimaryAttack()
+{
+	FVector vector =GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform transform =FTransform(GetControlRotation(),vector);
+
+	FActorSpawnParameters params;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	
+	GetWorld()->SpawnActor<AActor>(ProjectileClass,transform,params);
 }
