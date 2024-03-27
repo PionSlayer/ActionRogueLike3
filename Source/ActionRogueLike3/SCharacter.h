@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -23,6 +24,12 @@ protected:
 	// Called when the game starts or when spawned
 	UCameraComponent* CameraComp;
 	USpringArmComponent* SpringArmComp;
+	USInteractionComponent* interactionComp;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* AttackAnim; 
+	FTimerHandle TimerHandle_PrimaryAttack;
+	
 	virtual void BeginPlay() override;
 
 
@@ -30,6 +37,8 @@ public:
 	void MoveForward(float Value);
     void MoveSideWays(float Value);
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
+	void PrimaryInteract();
 	
 	virtual void Tick(float DeltaTime) override;
 

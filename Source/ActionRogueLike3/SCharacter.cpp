@@ -18,24 +18,21 @@ ASCharacter::ASCharacter()
 	SpringArmComp->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement=true;
 	bUseControllerRotationYaw = false;
+
+	interactionComp = CreateDefaultSubobject<USInteractionComponent>("interactionComp");
 }
 
-// Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
-
-// Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 
 }
-
-// Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -46,6 +43,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent -> BindAxis("MoveSideWays",this,&ASCharacter::MoveSideWays);
 
 	PlayerInputComponent -> BindAction("PrimaryAttack",IE_Pressed,this,&ASCharacter::PrimaryAttack);
+	PlayerInputComponent -> BindAction("PrimaryInteraction",IE_Pressed,this,&ASCharacter::PrimaryInteract);
+	
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -65,12 +64,23 @@ void ASCharacter::MoveSideWays(float Value)
 }
 void ASCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack,this,&ASCharacter::PrimaryAttack_TimeElapsed,0.2f);
+}
+
+void ASCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector vector =GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform transform =FTransform(GetControlRotation(),vector);
+ 	FTransform transform =FTransform(GetControlRotation(),vector);
+ 
+ 	FActorSpawnParameters params;
+ 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+ 
+ 	
+ 	GetWorld()->SpawnActor<AActor>(ProjectileClass,transform,params);
+}
 
-	FActorSpawnParameters params;
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass,transform,params);
+void ASCharacter::PrimaryInteract()
+{
+	interactionComp->PrimaryInteraction();
 }
