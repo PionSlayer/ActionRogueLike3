@@ -19,7 +19,7 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* BaseMesh;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 protected:
 	virtual void BeginPlay() override;
