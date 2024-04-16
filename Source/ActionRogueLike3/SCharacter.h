@@ -22,7 +22,9 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
+	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComp;
+	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComp;
 	USInteractionComponent* interactionComp;
 

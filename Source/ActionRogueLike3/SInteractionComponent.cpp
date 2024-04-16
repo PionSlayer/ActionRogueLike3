@@ -47,6 +47,7 @@ void USInteractionComponent::PrimaryInteraction()
 		{
 			APawn* MyPawn = Cast<APawn>(HitActor);
 			ISGamePlayInterface::Execute_Interact(HitActor,MyPawn);
+			break;
 		}
 	}
 	DrawDebugLine(GetWorld(),EyePosition,End,lineColor,false,2,0,1);
